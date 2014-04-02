@@ -1,18 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!doctype html>
+<html lang="ja">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="shortcut icon" type="image/x-icon" href="http://non117.com/favicon.ico" />
-<link rel="icon" type="image/x-icon" href="http://non117.com/favicon.ico" />
-<title>{% block title %}{% endblock %}Arupaka</title>
-<link href="http://non117.com/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="http://non117.com/libs/js/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.timer.js"></script>
-{% block extrahead %}{% endblock %}
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>{% block title %}{% endblock %}Arupaka</title>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="http://non117.com/libs/js/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.timer.js"></script>
+  {% block extrahead %}{% endblock %}
 </head>
 <body>
-{% block content %}{% endblock %}
+  {% block content %}{% endblock %}
 </body>
 </html>
