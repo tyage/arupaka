@@ -11,7 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from arupaka.vlclib import Controller, get_vlc_status, VLC_STATUS_STOPPED, VLC_STATUS_PAUSED
-from arupaka.settings import VLC_PATH, MOVIE_DIR, ENCODING, OPTION, UPDATE_TIME
+from arupaka.settings import VLC_PATH, MOVIE_DIRS, ENCODING, OPTION, UPDATE_TIME
 
 ip = urllib.urlopen("http://ipcheck.ieserver.net/").read()
 
@@ -21,21 +21,22 @@ def index(request):
         movies = Movies()
         cache.set("movies", movies, UPDATE_TIME)
     if request.method == "GET":
-        files = movies.get_filenames()
-        extra_context = {"files":files, "ip":ip}
+        dirs = movies.get_filenames()
+        extra_context = {"dirs":dirs, "ip":ip, "dirnames":MOVIE_DIRS}
         extra_context.update(get_vlc_status())
         return render(request, "index.html", extra_context)
     elif request.method == "POST":
         keyword = request.POST["keyword"].encode("utf-8")
-        files = movies.search(keyword)
-        return render(request, "search.html", {"files":files})
+        dirs = movies.search(keyword)
+        return render(request, "search.html", {"dirs":dirs, "dirnames":MOVIE_DIRS})
 
 def select(request):
     if request.method == "POST":
         controller = Controller()
         filename = request.POST["filename"]
+        dirname = request.POST["dirname"]
         if not controller.alive:
-            moviepath = os.path.join(MOVIE_DIR, filename).encode(ENCODING)
+            moviepath = os.path.join(dirname, filename).encode(ENCODING)
             cwd, vlc = os.path.split(VLC_PATH)
             os.chdir(cwd)
             command = vlc + ' -vvv "%s"' %  moviepath + OPTION
@@ -49,7 +50,7 @@ def select(request):
             controller = Controller()
             controller.clear()
 
-        moviepath = os.path.join(MOVIE_DIR, filename).encode("utf-8")
+        moviepath = os.path.join(dirname, filename).encode("utf-8")
         controller.enqueue(moviepath)
         if filename == controller.get_filename():
             controller.pause()
@@ -102,14 +103,16 @@ class Movie():
 class Movies():
     def __init__(self):
         extensions = (".mp4",".ts",".avi",".mov",".flv",".wmv",".m2ts")
-        files = glob.glob(os.path.join(MOVIE_DIR, "*.*"))
-        f = lambda filename:any([filename.endswith(extension) for extension in extensions])
-        movie_paths = reversed(map(lambda s:s.decode(ENCODING).encode("utf-8"), filter(f, files)))
-        self.movies = map(Movie, movie_paths)
+        self.movies = {}
+        for dir in MOVIE_DIRS:
+            files = glob.glob(os.path.join(dir, "*.*"))
+            f = lambda filename:any([filename.endswith(extension) for extension in extensions])
+            movie_paths = reversed(map(lambda s:s.decode(ENCODING).encode("utf-8"), filter(f, files)))
+            self.movies[dir] = map(Movie, movie_paths)
 
     def get_filenames(self):
-        return map(str, self.movies)
+        return dict([(dirname, map(str, files)) for dirname, files in self.movies.items()])
 
     def search(self, keyword):
         r = re.compile(keyword)
-        return filter(lambda m:r.search(str(m)), self.movies)
+        return dict([(dirname, filter(lambda m:r.search(str(m)), files)) for dirname, files in self.movies.items()])

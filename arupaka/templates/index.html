@@ -48,7 +48,8 @@ $(function(){
         $('input[name="select"]').change(function(){
             if (this.checked){
                 var filename = $(this).attr("filename");
-                $.ajax({type:"POST",url:"/select",data:"filename=" + filename + csrf});
+                var dirname = $(this).attr("dirname");
+                $.ajax({type:"POST",url:"/select",data:"filename=" + filename + "&dirname=" + dirname + csrf});
                 add_to_list(filename);
                 $(this).delay(10).queue(sync);
             }
@@ -134,10 +135,15 @@ $(function(){
             <button class="btn" id="reset_list">clear</button>
         </div>
         <div id="search_result">
-            {% for filename in files %}
-                <ul>
-                    <li><input type="checkbox" name="select" filename="{{ filename }}"> : {{ filename }}</li>
-                </ul>
+            {% for dirname, files in dirs.items %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">{{ dirname }}</div>
+                    <ul class="panel-body">
+                        {% for filename in files %}
+                            <li><input type="checkbox" name="select" dirname="{{ dirname }}" filename="{{ filename }}"> : {{ filename }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             {% endfor %}
         </div>
     </div>

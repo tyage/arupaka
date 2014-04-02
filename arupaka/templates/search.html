@@ -1,5 +1,10 @@
-{% for filename in files %}
-    <ul>
-        <li><input type="checkbox" name="select" filename="{{ filename }}"> : {{ filename }}</li>
-    </ul>
+{% for dirname, files in dirs.items %}
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ dirname }}</div>
+        <ul class="panel-body">
+            {% for filename in files %}
+                <li><input type="checkbox" name="select" dirname="{{ dirname }}" filename="{{ filename }}"> : {{ filename }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endfor %}
