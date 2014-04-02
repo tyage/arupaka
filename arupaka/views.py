@@ -43,12 +43,12 @@ def select(request):
             p = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
             cache.set("pid", p.pid, 86400*365) # 24h
             atexit.register(kill)
-            
+
             import time
             time.sleep(0.5)
             controller = Controller()
             controller.clear()
-        
+
         moviepath = os.path.join(MOVIE_DIR, filename).encode("utf-8")
         controller.enqueue(moviepath)
         if filename == controller.get_filename():
@@ -95,21 +95,21 @@ def kill():
 class Movie():
     def __init__(self, path):
         self.path = path
-    
+
     def __repr__(self):
         return os.path.basename(self.path)
 
 class Movies():
     def __init__(self):
-        extensions = (".mp4",".ts",".avi",".mov",".flv",".wmv")
+        extensions = (".mp4",".ts",".avi",".mov",".flv",".wmv",".m2ts")
         files = glob.glob(os.path.join(MOVIE_DIR, "*.*"))
         f = lambda filename:any([filename.endswith(extension) for extension in extensions])
         movie_paths = reversed(map(lambda s:s.decode(ENCODING).encode("utf-8"), filter(f, files)))
         self.movies = map(Movie, movie_paths)
-    
+
     def get_filenames(self):
         return map(str, self.movies)
-    
+
     def search(self, keyword):
         r = re.compile(keyword)
         return filter(lambda m:r.search(str(m)), self.movies)
